@@ -2,13 +2,20 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { LoginFormData, RegisterFormData } from '../types';
+import { validateRegistrationData, validateLoginData } from '../validation/auth-validation';
 
 export async function login(data: LoginFormData) {
   const supabase = await createClient();
 
+  // Validate input data
+  const validation = validateLoginData(data);
+  if (validation.error) {
+    return { error: validation.error };
+  }
+
   const { error } = await supabase.auth.signInWithPassword({
-    email: data.email,
-    password: data.password,
+    email: validation.data!.email,
+    password: validation.data!.password,
   });
 
   if (error) {
@@ -19,15 +26,21 @@ export async function login(data: LoginFormData) {
   return { error: null };
 }
 
-export async function register(data: RegisterFormData) {
+export async function register(data: RegisterFormData & { confirmPassword: string }) {
   const supabase = await createClient();
 
+  // Validate input data
+  const validation = validateRegistrationData(data);
+  if (validation.error) {
+    return { error: validation.error };
+  }
+
   const { error } = await supabase.auth.signUp({
-    email: data.email,
-    password: data.password,
+    email: validation.data!.email,
+    password: validation.data!.password,
     options: {
       data: {
-        name: data.name,
+        name: validation.data!.name,
       },
     },
   });

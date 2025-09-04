@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import EditPollForm from './EditPollForm';
 
 export default async function EditPollPage({ params }: { params: { id: string } }) {
-  const { poll, error } = await getPollById(params.id);
+  const { poll, error } = await getPollById(params.id, true); // Require ownership
 
   if (error || !poll) {
     notFound();

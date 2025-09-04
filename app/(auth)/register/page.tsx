@@ -28,7 +28,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const result = await register({ name, email, password });
+    const result = await register({ name, email, password, confirmPassword });
 
     if (result?.error) {
       setError(result.error);
